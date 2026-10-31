@@ -57,12 +57,13 @@ namespace Sudoku_Solver
         /// First method of solving the sudoku - Brute Force it
         static void BruteForce(int[,] sudokuMatrix)
         {
-            int[,] result = sudokuMatrix;
+            int[,] result = (int[,])sudokuMatrix.Clone();
             // Matrix Variable
             bool successful = false;
             bool stepBack = false;
+            bool forceWrite = false;
 
-            (byte y, byte x) matrixPosition = (0, 0);
+            (short y, short x) matrixPosition = (0, 0);
             (byte y, byte x) matrixBoxNumber = (0, 0);
             /*int matrixBoxNumberX = (matrixPosition.x / 3)*3;
             int matrixBoxNumberY = (matrixPosition.y / 3)*3;*/
@@ -70,26 +71,75 @@ namespace Sudoku_Solver
             while (!successful)
             {
                 // Check each element of the Sudoku
-                for (matrixPosition.y = 0; matrixPosition.y < 9; matrixPosition.y++)
+                for (; matrixPosition.y < 9; matrixPosition.y++)
                 {
-                    for (matrixPosition.x = 0; matrixPosition.x < 9; matrixPosition.x++)
+                    for (; matrixPosition.x < 9; matrixPosition.x++)
                     {
+                        int x = 1;
                         matrixBoxNumber.x = (byte)((matrixPosition.x / 3) * 3);
                         matrixBoxNumber.y = (byte)((matrixPosition.y / 3) * 3);
-                        if (sudokuMatrix[matrixPosition.y, matrixPosition.x] != 0) // Check for default number
+                        
+                        if (sudokuMatrix[matrixPosition.y, matrixPosition.x] != 0) // Check if default number
                         {
-                            continue; // Skip if there is a default number
+                            if (stepBack)
+                            {
+                                bool breakCycle = false;
+                                for (int tY = matrixPosition.y; tY >= 0; tY--)
+                                {
+                                    for (int tX = matrixPosition.x; tX >= 0; tX--)
+                                    {
+                                        Console.WriteLine("!X! " + sudokuMatrix[tY, tX]);
+                                        if (sudokuMatrix[tY, tX] != 0)
+                                        {
+                                            matrixPosition.x = (short)(tX - 2);
+                                        }
+                                        else
+                                        {
+                                            breakCycle = true;
+                                            break;
+                                        }
+                                    }
+                                    if (breakCycle) {break;}
+                                    matrixPosition.x = 8;
+                                    Console.WriteLine("*");
+                                    matrixPosition.y = (short)(tY - 2);
+                                }
+                                /*if (matrixPosition.x > 0)
+                                {
+                                    matrixPosition.x -= 2;
+                                }
+                                else
+                                {
+                                    if (matrixPosition.y > 0)
+                                    {
+                                        matrixPosition.x = 7;
+                                        matrixPosition.y--;
+                                    }
+                                }*/
+                                forceWrite = true;
+                                stepBack = false;
+                            }
+                            Console.WriteLine("Continue... there is a default number");
+                            continue;
+                        }
+
+                        Console.WriteLine("AAA " + x);
+                        if (forceWrite)
+                        {
+                            x = result[matrixPosition.y, matrixPosition.x] + 1;
+                            forceWrite = false;
                         }
                         
                         // Continue if empty
                         
                         bool isDuplicate = false;
                         bool isAnyNumberAvaliable = false;
-                        for (int x = 1; x <= 9; x++) // Number selection and validation
+                        for (; x <= 9; x++) // Number selection and validation
                         {
                             // Check for vertical duplication
                             for (int yy = 0; yy < result.GetLength(0); yy++)
                             {
+                                if (yy == matrixPosition.y) {continue;}
                                 if (result[yy, matrixPosition.x] == x)
                                 {
                                     Console.WriteLine("V: Number " + x + " duplication at " + matrixPosition.x + ":" + yy);
@@ -105,6 +155,7 @@ namespace Sudoku_Solver
                             // Check for horizontal duplication
                             for (int xx = 0; xx < result.GetLength(0); xx++)
                             {
+                                if (xx == matrixPosition.x) {continue;}
                                 if (result[matrixPosition.y, xx] == x)
                                 {
                                     Console.WriteLine("H: Number " + x + " duplication at " + xx + ":" + matrixPosition.y);
@@ -123,6 +174,7 @@ namespace Sudoku_Solver
                             {
                                 for (int xx = 0; xx < 3; xx++)
                                 {
+                                    if ((xx + matrixPosition.x) == matrixPosition.x && (yy + matrixPosition.y) == matrixPosition.y) {continue;}
                                     if (result[yy + matrixBoxNumber.y, xx + matrixBoxNumber.x] == x)
                                     {
                                         Console.WriteLine("B: Number " + x + " duplication at box " + (xx + matrixBoxNumber.x) + ":" +
@@ -146,12 +198,37 @@ namespace Sudoku_Solver
 
                         if (!isAnyNumberAvaliable)
                         {
-                            successful = true;
-                            Console.WriteLine("Failed to get available number");
-                            DrawSudoku(result);
-                            Environment.Exit(0);
+                            stepBack = true;
+                            Console.WriteLine("Failed to get available number. Rollback");
+
+                            if (matrixPosition.x > 0)
+                            {
+                                matrixPosition.x -= 2;
+                            }
+                            else
+                            {
+                                if (matrixPosition.y > 0)
+                                {
+                                    matrixPosition.x = 7;
+                                    matrixPosition.y--;
+                                }
+                            }
+                            
                         }
+                        else
+                        {
+                            if (matrixPosition.x == 9 && matrixPosition.y == 9)
+                            {
+                                Console.WriteLine("Last number successful");
+                                successful = true;
+                                DrawSudoku(result);
+                            }
+                        }
+                        Console.WriteLine("Continue. Current position: " + matrixPosition.x + ":" + matrixPosition.y);
+                        DrawSudoku(result);
                     }
+
+                    matrixPosition.x = 0;
                 }
             }
         }
