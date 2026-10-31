@@ -57,69 +57,102 @@ namespace Sudoku_Solver
         /// First method of solving the sudoku - Brute Force it
         static void BruteForce(int[,] sudokuMatrix)
         {
-            // Debug variables
-            int test_choosenElementXx = 0;
-            int test_choosenElementYy = 0;
-            
+            int[,] result = sudokuMatrix;
             // Matrix Variable
-            int matrixBoxNumberX = (test_choosenElementXx / 3)*3;
-            int matrixBoxNumberY = (test_choosenElementYy / 3)*3;
-            
-            // Number insertion
-            bool isDuplicate = false;
-            for (int x = 1; x <= 9; x++)
-            {
-                // Check for vertical duplication
-                for (int yy = 0; yy < sudokuMatrix.GetLength(0); yy++)
-                {
-                    if (sudokuMatrix[yy, test_choosenElementXx] == x)
-                    {
-                        Console.WriteLine("V: Number " + x + " duplication at " + test_choosenElementXx + ":" + yy);
-                        isDuplicate = true;
-                        break;
-                    }
-                }
-                if (isDuplicate)
-                {
-                    isDuplicate = false;
-                    continue;
-                }
-                // Check for horizontal duplication
-                for (int xx = 0; xx < sudokuMatrix.GetLength(0); xx++)
-                {
-                    if (sudokuMatrix[test_choosenElementYy, xx] == x)
-                    {
-                        Console.WriteLine("H: Number " + x + " duplication at " + xx + ":" + test_choosenElementYy);
-                        isDuplicate = true;
-                        break;
-                    }
-                }
+            bool successful = false;
+            bool stepBack = false;
 
-                if (isDuplicate)
+            (byte y, byte x) matrixPosition = (0, 0);
+            (byte y, byte x) matrixBoxNumber = (0, 0);
+            /*int matrixBoxNumberX = (matrixPosition.x / 3)*3;
+            int matrixBoxNumberY = (matrixPosition.y / 3)*3;*/
+            
+            while (!successful)
+            {
+                // Check each element of the Sudoku
+                for (matrixPosition.y = 0; matrixPosition.y < 9; matrixPosition.y++)
                 {
-                    isDuplicate = false;
-                    continue;
-                }
-                // Check the box where the chosen element
-                for (int yy = 0; yy < 3; yy++)
-                {
-                    for (int xx = 0; xx < 3; xx++)
+                    for (matrixPosition.x = 0; matrixPosition.x < 9; matrixPosition.x++)
                     {
-                        if (sudokuMatrix[yy + matrixBoxNumberY, xx + matrixBoxNumberX] == x)
+                        matrixBoxNumber.x = (byte)((matrixPosition.x / 3) * 3);
+                        matrixBoxNumber.y = (byte)((matrixPosition.y / 3) * 3);
+                        if (sudokuMatrix[matrixPosition.y, matrixPosition.x] != 0) // Check for default number
                         {
-                            Console.WriteLine("B: Number " + x + " duplication at box " + (xx + matrixBoxNumberX) + ":" +
-                                              (yy + matrixBoxNumberY));
-                            isDuplicate = true;
+                            continue; // Skip if there is a default number
+                        }
+                        
+                        // Continue if empty
+                        
+                        bool isDuplicate = false;
+                        bool isAnyNumberAvaliable = false;
+                        for (int x = 1; x <= 9; x++) // Number selection and validation
+                        {
+                            // Check for vertical duplication
+                            for (int yy = 0; yy < result.GetLength(0); yy++)
+                            {
+                                if (result[yy, matrixPosition.x] == x)
+                                {
+                                    Console.WriteLine("V: Number " + x + " duplication at " + matrixPosition.x + ":" + yy);
+                                    isDuplicate = true;
+                                    break;
+                                }
+                            }
+                            if (isDuplicate)
+                            {
+                                isDuplicate = false;
+                                continue;
+                            }
+                            // Check for horizontal duplication
+                            for (int xx = 0; xx < result.GetLength(0); xx++)
+                            {
+                                if (result[matrixPosition.y, xx] == x)
+                                {
+                                    Console.WriteLine("H: Number " + x + " duplication at " + xx + ":" + matrixPosition.y);
+                                    isDuplicate = true;
+                                    break;
+                                }
+                            }
+
+                            if (isDuplicate)
+                            {
+                                isDuplicate = false;
+                                continue;
+                            }
+                            // Check the box where the chosen element
+                            for (int yy = 0; yy < 3; yy++)
+                            {
+                                for (int xx = 0; xx < 3; xx++)
+                                {
+                                    if (result[yy + matrixBoxNumber.y, xx + matrixBoxNumber.x] == x)
+                                    {
+                                        Console.WriteLine("B: Number " + x + " duplication at box " + (xx + matrixBoxNumber.x) + ":" +
+                                                          (yy + matrixBoxNumber.y));
+                                        isDuplicate = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (isDuplicate)
+                            {
+                                isDuplicate = false;
+                                continue;
+                            }
+                            Console.WriteLine("Number " + x + " is valid");
+                            // Insert the number and continue
+                            result[matrixPosition.y, matrixPosition.x] = x;
+                            isAnyNumberAvaliable = true;
                             break;
+                        }
+
+                        if (!isAnyNumberAvaliable)
+                        {
+                            successful = true;
+                            Console.WriteLine("Failed to get available number");
+                            DrawSudoku(result);
+                            Environment.Exit(0);
                         }
                     }
                 }
-                if (isDuplicate)
-                {
-                    isDuplicate = false;
-                    continue;
-                }
-                Console.WriteLine("Number " + x + " is valid");
             }
         }
     }
