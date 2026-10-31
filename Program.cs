@@ -57,8 +57,14 @@ namespace Sudoku_Solver
         /// First method of solving the sudoku - Brute Force it
         static void BruteForce(int[,] sudokuMatrix)
         {
-            int test_choosenElementXX = 1;
-            int test_choosenElementYY = 1;
+            // Debug variables
+            int test_choosenElementXx = 0;
+            int test_choosenElementYy = 0;
+            
+            // Matrix Variable
+            int matrixBoxNumberX = (test_choosenElementXx / 3)*3;
+            int matrixBoxNumberY = (test_choosenElementYy / 3)*3;
+            
             // Number insertion
             bool isDuplicate = false;
             for (int x = 1; x <= 9; x++)
@@ -66,9 +72,9 @@ namespace Sudoku_Solver
                 // Check for vertical duplication
                 for (int yy = 0; yy < sudokuMatrix.GetLength(0); yy++)
                 {
-                    if (sudokuMatrix[yy, test_choosenElementXX] == x)
+                    if (sudokuMatrix[yy, test_choosenElementXx] == x)
                     {
-                        Console.WriteLine("V: Number " + x + " duplication at " + test_choosenElementXX + ":" + yy);
+                        Console.WriteLine("V: Number " + x + " duplication at " + test_choosenElementXx + ":" + yy);
                         isDuplicate = true;
                         break;
                     }
@@ -81,9 +87,9 @@ namespace Sudoku_Solver
                 // Check for horizontal duplication
                 for (int xx = 0; xx < sudokuMatrix.GetLength(0); xx++)
                 {
-                    if (sudokuMatrix[test_choosenElementYY, xx] == x)
+                    if (sudokuMatrix[test_choosenElementYy, xx] == x)
                     {
-                        Console.WriteLine("H: Number " + x + " duplication at " + xx + ":" + test_choosenElementYY);
+                        Console.WriteLine("H: Number " + x + " duplication at " + xx + ":" + test_choosenElementYy);
                         isDuplicate = true;
                         break;
                     }
@@ -94,29 +100,27 @@ namespace Sudoku_Solver
                     isDuplicate = false;
                     continue;
                 }
-                Console.WriteLine("Number " + x + " is valid");
-                
-                
-                /*for (int xx = 0; xx < sudokuMatrix.GetLength(0); xx++)
+                // Check the box where the chosen element
+                for (int yy = 0; yy < 3; yy++)
                 {
-                    for (int yy = 0; yy < sudokuMatrix.GetLength(1); yy++)
+                    for (int xx = 0; xx < 3; xx++)
                     {
-                        if (sudokuMatrix[xx, yy] != 0)
+                        if (sudokuMatrix[yy + matrixBoxNumberY, xx + matrixBoxNumberX] == x)
                         {
-                            
-                        } else
-                        if (sudokuMatrix[xx, yy] == x)
-                        {
-                            Console.WriteLine("NUMBER: " + x + " is dublicate for " + sudokuMatrix[xx, yy] + " at position " + xx + ":" + yy);
-                            //break;
+                            Console.WriteLine("B: Number " + x + " duplication at box " + (xx + matrixBoxNumberX) + ":" +
+                                              (yy + matrixBoxNumberY));
+                            isDuplicate = true;
+                            break;
                         }
                     }
-                }*/
+                }
+                if (isDuplicate)
+                {
+                    isDuplicate = false;
+                    continue;
+                }
+                Console.WriteLine("Number " + x + " is valid");
             }
-            // for (int i = 0; i < sudokuMatrix.GetLength(0); i++)
-            // {
-            //     
-            // }
         }
     }
 }   
