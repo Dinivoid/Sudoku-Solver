@@ -25,6 +25,7 @@ namespace Sudoku_Solver
             int[,] sudokuMatrix = new int[9, 9];
             
             DrawSudoku(sudokuVariant1);
+            BruteForce(sudokuVariant1);
         }
 
         // Function to draw sudoku in the cmd
@@ -52,6 +53,70 @@ namespace Sudoku_Solver
                     Console.WriteLine();
                 }
             }
+        }
+        /// First method of solving the sudoku - Brute Force it
+        static void BruteForce(int[,] sudokuMatrix)
+        {
+            int test_choosenElementXX = 1;
+            int test_choosenElementYY = 1;
+            // Number insertion
+            bool isDuplicate = false;
+            for (int x = 1; x <= 9; x++)
+            {
+                // Check for vertical duplication
+                for (int yy = 0; yy < sudokuMatrix.GetLength(0); yy++)
+                {
+                    if (sudokuMatrix[yy, test_choosenElementXX] == x)
+                    {
+                        Console.WriteLine("V: Number " + x + " duplication at " + test_choosenElementXX + ":" + yy);
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+                if (isDuplicate)
+                {
+                    isDuplicate = false;
+                    continue;
+                }
+                // Check for horizontal duplication
+                for (int xx = 0; xx < sudokuMatrix.GetLength(0); xx++)
+                {
+                    if (sudokuMatrix[test_choosenElementYY, xx] == x)
+                    {
+                        Console.WriteLine("H: Number " + x + " duplication at " + xx + ":" + test_choosenElementYY);
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+
+                if (isDuplicate)
+                {
+                    isDuplicate = false;
+                    continue;
+                }
+                Console.WriteLine("Number " + x + " is valid");
+                
+                
+                /*for (int xx = 0; xx < sudokuMatrix.GetLength(0); xx++)
+                {
+                    for (int yy = 0; yy < sudokuMatrix.GetLength(1); yy++)
+                    {
+                        if (sudokuMatrix[xx, yy] != 0)
+                        {
+                            
+                        } else
+                        if (sudokuMatrix[xx, yy] == x)
+                        {
+                            Console.WriteLine("NUMBER: " + x + " is dublicate for " + sudokuMatrix[xx, yy] + " at position " + xx + ":" + yy);
+                            //break;
+                        }
+                    }
+                }*/
+            }
+            // for (int i = 0; i < sudokuMatrix.GetLength(0); i++)
+            // {
+            //     
+            // }
         }
     }
 }   
