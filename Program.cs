@@ -104,9 +104,53 @@ namespace Sudoku_Solver
                                     Console.WriteLine("*");
                                     matrixPosition.y = (short)(tY - 2);
                                 }
-                                /*if (matrixPosition.x > 0)
+                                forceWrite = true;
+                                stepBack = false;
+                            }
+                            Console.WriteLine("Continue... there is a default number");
+                            continue;
+                        }
+                        else
+                        {
+                            if (result[matrixPosition.y, matrixPosition.x] != 0) // Check if already been here
+                            {
+                                if (stepBack)
                                 {
-                                    matrixPosition.x -= 2;
+                                    /*if (matrixPosition.x > 0)
+                                    {
+                                        matrixPosition.x -= 1;
+                                    }
+                                    else
+                                    {
+                                        if (matrixPosition.y > 0)
+                                        {
+                                            matrixPosition.x = 7;
+                                            matrixPosition.y--;
+                                        }
+                                    }*/
+                                    forceWrite = true;
+                                    stepBack = false;
+                                }
+                            }
+                        } 
+
+                        Console.WriteLine("PREVIEW. Current position: " + matrixPosition.x + ":" + matrixPosition.y);
+
+                        Console.WriteLine("AAA " + x);
+                        if (forceWrite)
+                        {
+                            Console.WriteLine("CHOSEN: " + result[matrixPosition.y, matrixPosition.x] + " AT " + matrixPosition.x + ":" + matrixPosition.y);
+                            x = result[matrixPosition.y, matrixPosition.x] + 1;
+                            forceWrite = false;
+                            Console.WriteLine("BBB " + x);
+                            if (x > 9)
+                            {
+                                result[matrixPosition.y, matrixPosition.x] = 0;
+                                Console.WriteLine("TEST: " + result[matrixPosition.y, matrixPosition.x] + " AT " + matrixPosition.x + ":" + matrixPosition.y);
+                                x = 1;
+                                if (matrixPosition.x > 0)
+                                {
+                                    matrixPosition.x -= 1;
                                 }
                                 else
                                 {
@@ -115,19 +159,11 @@ namespace Sudoku_Solver
                                         matrixPosition.x = 7;
                                         matrixPosition.y--;
                                     }
-                                }*/
-                                forceWrite = true;
-                                stepBack = false;
+                                }
+                                Console.WriteLine("FORCE SKIP");
+                                /*stepBack = true;
+                                continue;*/
                             }
-                            Console.WriteLine("Continue... there is a default number");
-                            continue;
-                        }
-
-                        Console.WriteLine("AAA " + x);
-                        if (forceWrite)
-                        {
-                            x = result[matrixPosition.y, matrixPosition.x] + 1;
-                            forceWrite = false;
                         }
                         
                         // Continue if empty
@@ -221,7 +257,6 @@ namespace Sudoku_Solver
                             {
                                 Console.WriteLine("Last number successful");
                                 successful = true;
-                                DrawSudoku(result);
                             }
                         }
                         Console.WriteLine("Continue. Current position: " + matrixPosition.x + ":" + matrixPosition.y);
